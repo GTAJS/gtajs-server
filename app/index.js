@@ -7,6 +7,6 @@ export default app;
 
 app.use(middleware.types);
 app.use(middleware.body);
-app.use('/1', handlers);
+app.use(handlers);
 app.use(middleware.notFound);
 app.use(middleware.error);

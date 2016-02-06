@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 
 import log from 'cuvva-log';
+import http from 'http';
 import App from '../app';
+import Server from '../lib/comms/server';
 
 log.setHandler('fatal', () => { process.exit(1); });
 
-async function start() {
-	const port = process.env.PORT || 3000;
+const httpServer = http.createServer(App);
+const server = new Server(httpServer);
 
-	App.listen(port, () => log.info('http_listening', { port: port }));
-}
+App.set('server', server);
 
-start().catch(function (error) {
-	log.fatal('start_failed', [error]);
-});
+const port = process.env.PORT || 10311;
+httpServer.listen(port, () => log.info('http_listening', { port: port }));
