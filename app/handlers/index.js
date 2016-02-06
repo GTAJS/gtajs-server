@@ -17,7 +17,7 @@ router.get('/:client_id', async (req, res) => {
 	const server = req.app.get('server');
 	const clientId = req.params.client_id;
 
-	const client = server.clients.find(c => c.id === clientId);
+	const client = clientId === 'first' ? server.clients[0] : server.clients.find(c => c.id === clientId);
 
 	if (!client)
 		throw log.info('not_found');
@@ -25,18 +25,18 @@ router.get('/:client_id', async (req, res) => {
 	res.json({ id: client.id });
 });
 
-router.get('/:client_id/:command', async (req, res) => {
+router.post('/:client_id/:command', async (req, res) => {
 	const server = req.app.get('server');
 	const clientId = req.params.client_id;
 	const command = req.params.command;
-	const params = req.query;
+	const input = req.body;
 
-	const client = server.clients.find(c => c.id === clientId);
+	const client = clientId === 'first' ? server.clients[0] : server.clients.find(c => c.id === clientId);
 
 	if (!client)
 		throw log.info('not_found');
 
-	const out = await client.command(command, params);
+	const out = await client.command(command, input);
 
 	res.json(out);
 });
