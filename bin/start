@@ -5,6 +5,7 @@ import http from 'http';
 import App from '../app';
 import Server from '../lib/comms/server';
 
+log.setMinLogLevel('debug');
 log.setHandler('fatal', () => { process.exit(1); });
 
 const httpServer = http.createServer(App);
