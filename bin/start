@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+
+import log from 'cuvva-log';
+import App from '../app';
+
+log.setHandler('fatal', () => { process.exit(1); });
+
+async function start() {
+	const port = process.env.PORT || 3000;
+
+	App.listen(port, () => log.info('http_listening', { port: port }));
+}
+
+start().catch(function (error) {
+	log.fatal('start_failed', [error]);
+});
