@@ -5,6 +5,7 @@ import handlers from './handlers';
 const app = express();
 export default app;
 
+app.use(middleware.cors);
 app.use(middleware.types);
 app.use(middleware.body);
 app.use(handlers);
