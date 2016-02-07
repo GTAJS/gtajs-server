@@ -5,7 +5,7 @@ const router = Router();
 export default router;
 
 // prefix /
-router.get('/', async (req, res) => {
+router.get('/clients', async (req, res) => {
 	const server = req.app.get('server');
 
 	const clients = server.clients.map(c => ({ id: c.id }));
@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
 	res.json(clients);
 });
 
-router.get('/:client_id', async (req, res) => {
+router.get('/clients/:client_id', async (req, res) => {
 	const server = req.app.get('server');
 	const clientId = req.params.client_id;
 
@@ -25,7 +25,7 @@ router.get('/:client_id', async (req, res) => {
 	res.json({ id: client.id });
 });
 
-router.post('/:client_id/:command', async (req, res) => {
+router.post('/clients/:client_id/:command', async (req, res) => {
 	const server = req.app.get('server');
 	const clientId = req.params.client_id;
 	const command = req.params.command;
