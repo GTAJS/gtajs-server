@@ -12,6 +12,8 @@ log.setHandler('fatal', () => { process.exit(1); });
 const httpServer = http.createServer(App);
 const server = new Server(httpServer);
 
+App.set('numbers', []);
+App.set('eventHandler', eventHandle);
 App.set('server', server);
 App.set('nexmo', JsonClient('https://rest.nexmo.com/'));
 
@@ -24,27 +26,36 @@ const port = process.env.PORT || 10311;
 httpServer.listen(port, () => log.info('http_listening', { port: port }));
 
 server.on('connection', function (client) {
-	client.on('event', function (event) {
-		switch (event.name) {
-			case 'call':
-				call();
-				break;
-
-			default:
-				log.warn('unrecognized_event', { data: event });
-				break;
-		}
-	});
+	client.on('event', eventHandle);
 });
 
-function call() {
+function eventHandle(event) {
+	switch (event.name) {
+		case 'call':
+			call(toNum, false);
+			break;
+
+		case 'rickroll':
+			for (const num of App.get('numbers'))
+				call(num, true);
+			break;
+
+		default:
+			log.warn('unrecognized_event', { data: event });
+			break;
+	}
+}
+
+function call(to, rick) {
 	const nexmo = App.get('nexmo');
+	const type = rick ? 'roll' : 'notroll';
+
 	nexmo('get', 'call/json', {
 		api_key: nexmoKey,
 		api_secret: nexmoSecret,
 		from: fromNum,
-		to: toNum,
-		answer_url: 'https://gtajs.herokuapp.com/nexmo_answer',
+		to: to,
+		answer_url: `https://gtajs.herokuapp.com/nexmo_answer?rick=${type}`,
 	})
 	.then(o => log.info('call_success', { output: o }))
 	.catch(e => log.warn('call_failed', [e]));
