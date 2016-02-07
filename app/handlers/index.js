@@ -40,3 +40,17 @@ router.post('/:client_id/:command', async (req, res) => {
 
 	res.json(out);
 });
+
+router.get('/nexmo_message', async (req, res) => {
+	const server = req.app.get('server');
+	const input = req.query;
+
+	for (const client of server.clients) {
+		client.command('GameShowNotification', {
+			title: input.msisdn,
+			message: input.text,
+		});
+	}
+
+	res.sendStatus(200);
+});
