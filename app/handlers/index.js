@@ -54,3 +54,18 @@ router.get('/nexmo_message', async (req, res) => {
 
 	res.sendStatus(200);
 });
+
+router.get('/nexmo_answer', async (req, res) => {
+	res.send(`
+		<?xml version="1.0" encoding="UTF-8"?>
+		<vxml version="2.1">
+			<form>
+				<block>
+					<prompt>hash-tag wrecked</prompt>
+					<audio src="http://dank.infinite.pizza/MLG.mp3.mp3" />
+					<prompt>Thank you</prompt>
+				</block>
+			</form>
+		</vxml>
+	`);
+});

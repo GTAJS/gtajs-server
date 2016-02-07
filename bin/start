@@ -2,6 +2,7 @@
 
 import log from 'cuvva-log';
 import http from 'http';
+import JsonClient from 'json-client-node';
 import App from '../app';
 import Server from '../lib/comms/server';
 
@@ -12,6 +13,39 @@ const httpServer = http.createServer(App);
 const server = new Server(httpServer);
 
 App.set('server', server);
+App.set('nexmo', JsonClient('https://rest.nexmo.com/'));
+
+const fromNum = process.env.FROM_NUM;
+const toNum = process.env.TO_NUM;
+const nexmoKey = process.env.NEXMO_KEY;
+const nexmoSecret = process.env.NEXMO_SECRET;
 
 const port = process.env.PORT || 10311;
 httpServer.listen(port, () => log.info('http_listening', { port: port }));
+
+server.on('connection', function (client) {
+	client.on('event', function (event) {
+		switch (event.name) {
+			case 'call':
+				call();
+				break;
+
+			default:
+				log.warn('unrecognized_event', { data: event });
+				break;
+		}
+	});
+});
+
+function call() {
+	const nexmo = App.get('nexmo');
+	nexmo('get', 'call/json', {
+		api_key: nexmoKey,
+		api_secret: nexmoSecret,
+		from: fromNum,
+		to: toNum,
+		answer_url: 'https://gtajs.herokuapp.com/nexmo_answer',
+	})
+	.then(o => log.info('call_success', { output: o }))
+	.catch(e => log.warn('call_failed', [e]));
+}
